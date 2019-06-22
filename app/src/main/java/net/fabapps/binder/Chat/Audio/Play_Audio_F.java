@@ -12,7 +12,7 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.dinosoftlabs.binder.R;
+import net.fabapps.binder.R;
 
 import nl.changer.audiowife.AudioWife;
 

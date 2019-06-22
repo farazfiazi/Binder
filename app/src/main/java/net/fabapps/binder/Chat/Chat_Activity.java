@@ -50,6 +50,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+
 import net.fabapps.binder.Chat.Audio.Play_Audio_F;
 import net.fabapps.binder.Chat.Audio.SendAudio;
 import net.fabapps.binder.CodeClasses.Functions;
@@ -58,6 +59,7 @@ import net.fabapps.binder.Main_Menu.MainMenuActivity;
 import net.fabapps.binder.Profile.Profile_Details.Profile_Details_F;
 import net.fabapps.binder.R;
 import net.fabapps.binder.See_Full_Image_F;
+
 import com.downloader.Error;
 import com.downloader.OnCancelListener;
 import com.downloader.OnDownloadListener;
@@ -116,10 +118,10 @@ public class Chat_Activity extends Fragment {
     DatabaseReference rootref;
     String senderid = "";
     String Receiverid = "";
-    String Receiver_name="";
-    String Receiver_pic="null";
-    public static String token="null";
-    boolean is_match_exits=false;
+    String Receiver_name = "";
+    String Receiver_pic = "null";
+    public static String token = "null";
+    boolean is_match_exits = false;
 
     EditText message;
 
@@ -130,18 +132,18 @@ public class Chat_Activity extends Fragment {
     private DatabaseReference receive_typing_indication;
     RecyclerView chatrecyclerview;
     TextView user_name;
-    private List<Chat_GetSet> mChats=new ArrayList<>();
+    private List<Chat_GetSet> mChats = new ArrayList<>();
     ChatAdapter mAdapter;
     ProgressBar p_bar;
 
     Query query_getchat;
     Query my_block_status_query;
     Query other_block_status_query;
-    boolean is_user_already_block=false;
+    boolean is_user_already_block = false;
 
     ImageView profileimage;
-    public static String senderid_for_check_notification="";
-    public static String uploading_image_id="none";
+    public static String senderid_for_check_notification = "";
+    public static String uploading_image_id = "none";
 
     Context context;
     IOSDialog lodding_view;
@@ -152,7 +154,7 @@ public class Chat_Activity extends Fragment {
     ImageButton alert_btn;
 
 
-    public static String uploading_Audio_id="none";
+    public static String uploading_Audio_id = "none";
 
     ImageButton mic_btn;
 
@@ -165,18 +167,18 @@ public class Chat_Activity extends Fragment {
 
         view = inflater.inflate(R.layout.activity_chat, container, false);
 
-        context=getContext();
+        context = getContext();
 
-        direct = new File(Environment.getExternalStorageDirectory() +"/Binder/");
+        direct = new File(Environment.getExternalStorageDirectory() + "/Binder/");
 
         // intialize the database refer
         rootref = FirebaseDatabase.getInstance().getReference();
-        Adduser_to_inbox=FirebaseDatabase.getInstance().getReference();
+        Adduser_to_inbox = FirebaseDatabase.getInstance().getReference();
 
         message = (EditText) view.findViewById(R.id.msgedittext);
 
-        user_name=view.findViewById(R.id.username);
-        profileimage=view.findViewById(R.id.profileimage);
+        user_name = view.findViewById(R.id.username);
+        profileimage = view.findViewById(R.id.profileimage);
 
 
         // the send id and reciever id from the back activity in which we come from
@@ -184,31 +186,31 @@ public class Chat_Activity extends Fragment {
         if (bundle != null) {
             senderid = bundle.getString("Sender_Id");
             Receiverid = bundle.getString("Receiver_Id");
-            Receiver_name=bundle.getString("name");
-            Receiver_pic=bundle.getString("picture");
-            is_match_exits=bundle.getBoolean("is_match_exits");
+            Receiver_name = bundle.getString("name");
+            Receiver_pic = bundle.getString("picture");
+            is_match_exits = bundle.getBoolean("is_match_exits");
             user_name.setText(Receiver_name);
-            senderid_for_check_notification=Receiverid;
+            senderid_for_check_notification = Receiverid;
 
             // these two method will get other datial of user like there profile pic link and username
             Picasso.with(context).load(Receiver_pic)
-                    .resize(100,100)
+                    .resize(100, 100)
                     .into(profileimage);
             profileimage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                 Profile_detail();
+                    Profile_detail();
                 }
             });
 
-            sendAudio =new SendAudio(context,message,rootref,Adduser_to_inbox,
-                    senderid,Receiverid,Receiver_name,Receiver_pic,is_match_exits);
+            sendAudio = new SendAudio(context, message, rootref, Adduser_to_inbox,
+                    senderid, Receiverid, Receiver_name, Receiver_pic, is_match_exits);
 
             rootref.child("Users").child(Receiverid).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.exists())
-                    token=dataSnapshot.child("token").getValue().toString();
+                    if (dataSnapshot.exists())
+                        token = dataSnapshot.child("token").getValue().toString();
                 }
 
                 @Override
@@ -221,11 +223,7 @@ public class Chat_Activity extends Fragment {
         }
 
 
-
-
-
-
-        p_bar=view.findViewById(R.id.progress_bar);
+        p_bar = view.findViewById(R.id.progress_bar);
         // this is the black color loader that we see whan we click on save button
         lodding_view = new IOSDialog.Builder(context)
                 .setCancelable(false)
@@ -244,39 +242,38 @@ public class Chat_Activity extends Fragment {
             @Override
             public void onItemClick(Chat_GetSet item, View v) {
 
-                  if(item.getType().equals("image"))
+                if (item.getType().equals("image"))
                     OpenfullsizeImage(item);
 
-                  if(v.getId()==R.id.audio_bubble){
-                      RelativeLayout mainlayout=(RelativeLayout) v.getParent();
+                if (v.getId() == R.id.audio_bubble) {
+                    RelativeLayout mainlayout = (RelativeLayout) v.getParent();
 
-                      File fullpath = new File(Environment.getExternalStorageDirectory() +"/Binder/"+item.chat_id+".mp3");
-                      if(fullpath.exists()) {
+                    File fullpath = new File(Environment.getExternalStorageDirectory() + "/Binder/" + item.chat_id + ".mp3");
+                    if (fullpath.exists()) {
 
-                          OpenAudio(fullpath.getAbsolutePath());
+                        OpenAudio(fullpath.getAbsolutePath());
 
-                      }else {
-                          download_audio((ProgressBar) mainlayout.findViewById(R.id.p_bar),item);
-                      }
+                    } else {
+                        download_audio((ProgressBar) mainlayout.findViewById(R.id.p_bar), item);
+                    }
 
-                   }
+                }
 
 
             }
 
 
-
-        } ,new ChatAdapter.OnLongClickListener() {
+        }, new ChatAdapter.OnLongClickListener() {
             @Override
             public void onLongclick(Chat_GetSet item, View view) {
                 if (view.getId() == R.id.msgtxt) {
-                    if(senderid.equals(item.getSender_id()) && istodaymessage(item.getTimestamp()))
-                    delete_Message(item);
+                    if (senderid.equals(item.getSender_id()) && istodaymessage(item.getTimestamp()))
+                        delete_Message(item);
                 } else if (view.getId() == R.id.chatimage) {
-                    if(senderid.equals(item.getSender_id()) && istodaymessage(item.getTimestamp()))
-                    delete_Message(item);
-                }else if (view.getId() == R.id.audio_bubble) {
-                    if(senderid.equals(item.getSender_id()) && istodaymessage(item.getTimestamp()))
+                    if (senderid.equals(item.getSender_id()) && istodaymessage(item.getTimestamp()))
+                        delete_Message(item);
+                } else if (view.getId() == R.id.audio_bubble) {
+                    if (senderid.equals(item.getSender_id()) && istodaymessage(item.getTimestamp()))
                         delete_Message(item);
                 }
             }
@@ -289,6 +286,7 @@ public class Chat_Activity extends Fragment {
         chatrecyclerview.addOnScrollListener(new RecyclerView.OnScrollListener() {
             boolean userScrolled;
             int scrollOutitems;
+
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -296,13 +294,14 @@ public class Chat_Activity extends Fragment {
                     userScrolled = true;
                 }
             }
+
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
                 scrollOutitems = layout.findFirstCompletelyVisibleItemPosition();
 
-                if (userScrolled && (scrollOutitems == 0 && mChats.size()>9)) {
+                if (userScrolled && (scrollOutitems == 0 && mChats.size() > 9)) {
                     userScrolled = false;
                     lodding_view.show();
                     rootref.child("chat").child(senderid + "-" + Receiverid).orderByChild("chat_id")
@@ -310,19 +309,19 @@ public class Chat_Activity extends Fragment {
                             .addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    ArrayList<Chat_GetSet> arrayList=new ArrayList<>();
-                                    for(DataSnapshot snapshot: dataSnapshot.getChildren()){
-                                        Chat_GetSet item=snapshot.getValue(Chat_GetSet.class);
+                                    ArrayList<Chat_GetSet> arrayList = new ArrayList<>();
+                                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                        Chat_GetSet item = snapshot.getValue(Chat_GetSet.class);
                                         arrayList.add(item);
                                     }
-                                    for (int i=arrayList.size()-2; i>=0; i-- ){
-                                        mChats.add(0,arrayList.get(i));
+                                    for (int i = arrayList.size() - 2; i >= 0; i--) {
+                                        mChats.add(0, arrayList.get(i));
                                     }
 
                                     mAdapter.notifyDataSetChanged();
                                     lodding_view.cancel();
 
-                                    if(arrayList.size()>8){
+                                    if (arrayList.size() > 8) {
                                         chatrecyclerview.scrollToPosition(arrayList.size());
                                     }
 
@@ -338,23 +337,23 @@ public class Chat_Activity extends Fragment {
         });
 
 
-        gif_layout=view.findViewById(R.id.gif_layout);
+        gif_layout = view.findViewById(R.id.gif_layout);
 
         // this the send btn action in that mehtod we will check message field is empty or not
         // if not then we call a method and pass the message
-        sendbtn =view.findViewById(R.id.sendbtn);
+        sendbtn = view.findViewById(R.id.sendbtn);
         sendbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               if(!TextUtils.isEmpty(message.getText().toString())){
-                   if(gif_layout.getVisibility()==View.VISIBLE){
-                       searchGif(message.getText().toString());
-                   }else {
-                       SendMessage(message.getText().toString());
-                       message.setText(null);
-                   }
+                if (!TextUtils.isEmpty(message.getText().toString())) {
+                    if (gif_layout.getVisibility() == View.VISIBLE) {
+                        searchGif(message.getText().toString());
+                    } else {
+                        SendMessage(message.getText().toString());
+                        message.setText(null);
+                    }
 
-               }
+                }
             }
         });
 
@@ -366,19 +365,18 @@ public class Chat_Activity extends Fragment {
         });
 
 
-        upload_gif_btn= view.findViewById(R.id.upload_gif_btn);
+        upload_gif_btn = view.findViewById(R.id.upload_gif_btn);
         upload_gif_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(gif_layout.getVisibility()==View.VISIBLE){
+                if (gif_layout.getVisibility() == View.VISIBLE) {
                     slideDown();
-                }else{
-                slideUp();
-                GetGipy();
+                } else {
+                    slideUp();
+                    GetGipy();
                 }
             }
         });
-
 
 
         view.findViewById(R.id.Goback).setOnClickListener(new View.OnClickListener() {
@@ -392,14 +390,14 @@ public class Chat_Activity extends Fragment {
         message.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if(!hasFocus){
+                if (!hasFocus) {
                     SendTypingIndicator(false);
                 }
             }
         });
 
 
-       // this is the message field event lister which tells the second user either the user is typing or not
+        // this is the message field event lister which tells the second user either the user is typing or not
         // most importent to show type indicator to second user
         message.addTextChangedListener(new TextWatcher() {
             @Override
@@ -409,12 +407,11 @@ public class Chat_Activity extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-               if(count==0){
-                   SendTypingIndicator(false);
-               }
-               else {
-                   SendTypingIndicator(true);
-                   }
+                if (count == 0) {
+                    SendTypingIndicator(false);
+                } else {
+                    SendTypingIndicator(true);
+                }
 
 
             }
@@ -426,31 +423,30 @@ public class Chat_Activity extends Fragment {
         });
 
 
-
         // this the mic touch listener
         // when our touch action is Down is will start recording and when our Touch action is Up
         // it will stop the recording
-        mic_btn= (ImageButton) view.findViewById(R.id.mic_btn);
+        mic_btn = (ImageButton) view.findViewById(R.id.mic_btn);
         final long[] touchtime = {System.currentTimeMillis()};
         mic_btn.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
-                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
 
-                        if(check_Recordpermission() && check_writeStoragepermission()) {
-                            touchtime[0] = System.currentTimeMillis();
-                            sendAudio.Runbeep("start");
-                            Toast.makeText(context, "Recording...", Toast.LENGTH_SHORT).show();
-                        }
+                    if (check_Recordpermission() && check_writeStoragepermission()) {
+                        touchtime[0] = System.currentTimeMillis();
+                        sendAudio.Runbeep("start");
+                        Toast.makeText(context, "Recording...", Toast.LENGTH_SHORT).show();
+                    }
 
-                       } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                        if (touchtime[0] + 4000 > System.currentTimeMillis()) {
-                            sendAudio.stop_timer();
-                            Toast.makeText(context, "Hold Mic Button to Record", Toast.LENGTH_SHORT).show();
-                        } else {
-                            sendAudio.stopRecording();
-                            Toast.makeText(context, "Stop Recording...", Toast.LENGTH_SHORT).show();
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (touchtime[0] + 4000 > System.currentTimeMillis()) {
+                        sendAudio.stop_timer();
+                        Toast.makeText(context, "Hold Mic Button to Record", Toast.LENGTH_SHORT).show();
+                    } else {
+                        sendAudio.stopRecording();
+                        Toast.makeText(context, "Stop Recording...", Toast.LENGTH_SHORT).show();
                     }
 
                 }
@@ -460,15 +456,11 @@ public class Chat_Activity extends Fragment {
         });
 
 
-
-
-
         // this method receiver the type indicator of second user to tell that his friend is typing or not
         ReceivetypeIndication();
 
 
-
-        alert_btn=view.findViewById(R.id.alert_btn);
+        alert_btn = view.findViewById(R.id.alert_btn);
 
 
         alert_btn.setOnClickListener(new View.OnClickListener() {
@@ -478,7 +470,6 @@ public class Chat_Activity extends Fragment {
                 block_user_dialog();
             }
         });
-
 
 
         getChat_data();
@@ -500,148 +491,142 @@ public class Chat_Activity extends Fragment {
         mchatRef_reteriving = FirebaseDatabase.getInstance().getReference();
         query_getchat = mchatRef_reteriving.child("chat").child(senderid + "-" + Receiverid);
 
-        my_block_status_query =mchatRef_reteriving.child("Inbox")
+        my_block_status_query = mchatRef_reteriving.child("Inbox")
                 .child(MainMenuActivity.user_id)
                 .child(Receiverid);
 
-        other_block_status_query=mchatRef_reteriving.child("Inbox")
+        other_block_status_query = mchatRef_reteriving.child("Inbox")
                 .child(Receiverid)
                 .child(MainMenuActivity.user_id);
 
 
-
-
         // this will get all the messages between two users
-      eventListener=new ChildEventListener() {
-      @Override
-      public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-             try {
-                 Chat_GetSet model = dataSnapshot.getValue(Chat_GetSet.class);
-                 mChats.add(model);
-                 mAdapter.notifyDataSetChanged();
-                 chatrecyclerview.scrollToPosition(mChats.size() - 1);
-             }
-             catch (Exception ex) {
-                 Log.e("", ex.getMessage());
-             }
-          ChangeStatus();
-     }
-
-     @Override
-     public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-
-         if (dataSnapshot != null && dataSnapshot.getValue() != null) {
-
-             try {
-                 Chat_GetSet model = dataSnapshot.getValue(Chat_GetSet.class);
-
-                 for (int i=mChats.size()-1;i>=0;i--){
-                     if(mChats.get(i).getTimestamp().equals(dataSnapshot.child("timestamp").getValue())){
-                         mChats.remove(i);
-                         mChats.add(i,model);
-                       break;
-                     }
-                 }
-                  mAdapter.notifyDataSetChanged();
+        eventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                try {
+                    Chat_GetSet model = dataSnapshot.getValue(Chat_GetSet.class);
+                    mChats.add(model);
+                    mAdapter.notifyDataSetChanged();
+                    chatrecyclerview.scrollToPosition(mChats.size() - 1);
+                } catch (Exception ex) {
+                    Log.e("", ex.getMessage());
                 }
-             catch (Exception ex) {
-                 Log.e("", ex.getMessage());
-             }
-         }
-     }
+                ChangeStatus();
+            }
 
-     @Override
-     public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-     }
-
-     @Override
-     public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-     }
-
-     @Override
-     public void onCancelled(DatabaseError databaseError) {
-         Log.d("", databaseError.getMessage());
-     }
- };
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
 
-      // this will check the two user are do chat before or not
-       valueEventListener = new ValueEventListener() {
-         @Override
-         public void onDataChange(DataSnapshot dataSnapshot) {
-             if(dataSnapshot.hasChild(senderid + "-" + Receiverid)){
-                 p_bar.setVisibility(View.GONE);
-                 query_getchat.removeEventListener(valueEventListener);
-             }
-             else {
-                 p_bar.setVisibility(View.GONE);
-                 query_getchat.removeEventListener(valueEventListener);
-             }
-         }
+                if (dataSnapshot != null && dataSnapshot.getValue() != null) {
 
-         @Override
-         public void onCancelled(DatabaseError databaseError) {
+                    try {
+                        Chat_GetSet model = dataSnapshot.getValue(Chat_GetSet.class);
 
-         }
-     };
+                        for (int i = mChats.size() - 1; i >= 0; i--) {
+                            if (mChats.get(i).getTimestamp().equals(dataSnapshot.child("timestamp").getValue())) {
+                                mChats.remove(i);
+                                mChats.add(i, model);
+                                break;
+                            }
+                        }
+                        mAdapter.notifyDataSetChanged();
+                    } catch (Exception ex) {
+                        Log.e("", ex.getMessage());
+                    }
+                }
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("", databaseError.getMessage());
+            }
+        };
 
 
-       //this will check the block status of user which is open the chat. to know either i am blocked or not
+        // this will check the two user are do chat before or not
+        valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.hasChild(senderid + "-" + Receiverid)) {
+                    p_bar.setVisibility(View.GONE);
+                    query_getchat.removeEventListener(valueEventListener);
+                } else {
+                    p_bar.setVisibility(View.GONE);
+                    query_getchat.removeEventListener(valueEventListener);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+
+        //this will check the block status of user which is open the chat. to know either i am blocked or not
         // if i am block then the bottom Writechat layout will be invisible
-       my_inbox_listener =new ValueEventListener() {
-           @Override
-           public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-               if(dataSnapshot.exists() && dataSnapshot.child("block").getValue()!=null){
-                  String block=dataSnapshot.child("block").getValue().toString();
-                   if(block.equals("1")){
-                       view.findViewById(R.id.writechatlayout).setVisibility(View.INVISIBLE);
-                   }else {
-                       view.findViewById(R.id.writechatlayout).setVisibility(View.VISIBLE);
-                   }
-               }else {
-                   view.findViewById(R.id.writechatlayout).setVisibility(View.VISIBLE);
-               }
-           }
+        my_inbox_listener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists() && dataSnapshot.child("block").getValue() != null) {
+                    String block = dataSnapshot.child("block").getValue().toString();
+                    if (block.equals("1")) {
+                        view.findViewById(R.id.writechatlayout).setVisibility(View.INVISIBLE);
+                    } else {
+                        view.findViewById(R.id.writechatlayout).setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    view.findViewById(R.id.writechatlayout).setVisibility(View.VISIBLE);
+                }
+            }
 
-           @Override
-           public void onCancelled(@NonNull DatabaseError databaseError) {
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-           }
-       };
+            }
+        };
 
-       // this will check the block status of other user and according to them the block status dialog's option will be change
-       other_inbox_listener=new ValueEventListener() {
-           @Override
-           public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-               if(dataSnapshot.exists() && dataSnapshot.child("block").getValue()!=null){
-                   String block=dataSnapshot.child("block").getValue().toString();
-                   if(block.equals("1")){
-                       is_user_already_block=true;
-                   }else {
-                       is_user_already_block=false;
-                   }
-               }else {
-                   is_user_already_block=false;
-               }
-           }
+        // this will check the block status of other user and according to them the block status dialog's option will be change
+        other_inbox_listener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists() && dataSnapshot.child("block").getValue() != null) {
+                    String block = dataSnapshot.child("block").getValue().toString();
+                    if (block.equals("1")) {
+                        is_user_already_block = true;
+                    } else {
+                        is_user_already_block = false;
+                    }
+                } else {
+                    is_user_already_block = false;
+                }
+            }
 
-           @Override
-           public void onCancelled(@NonNull DatabaseError databaseError) {
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-           }
-       };
+            }
+        };
 
 
-       query_getchat.limitToLast(20).addChildEventListener(eventListener);
-       mchatRef_reteriving.child("chat").addValueEventListener(valueEventListener);
+        query_getchat.limitToLast(20).addChildEventListener(eventListener);
+        mchatRef_reteriving.child("chat").addValueEventListener(valueEventListener);
 
-       my_block_status_query.addValueEventListener(my_inbox_listener);
-       other_block_status_query.addValueEventListener(other_inbox_listener);
+        my_block_status_query.addValueEventListener(my_inbox_listener);
+        other_block_status_query.addValueEventListener(other_inbox_listener);
     }
-
 
 
     // this will add the new message in chat node and update the ChatInbox by new message by present date
@@ -658,10 +643,10 @@ public class Chat_Activity extends Fragment {
         final HashMap message_user_map = new HashMap<>();
         message_user_map.put("receiver_id", Receiverid);
         message_user_map.put("sender_id", senderid);
-        message_user_map.put("chat_id",pushid);
+        message_user_map.put("chat_id", pushid);
         message_user_map.put("text", message);
-        message_user_map.put("type","text");
-        message_user_map.put("pic_url","");
+        message_user_map.put("type", "text");
+        message_user_map.put("pic_url", "");
         message_user_map.put("status", "0");
         message_user_map.put("time", "");
         message_user_map.put("sender_name", MainMenuActivity.user_name);
@@ -674,43 +659,43 @@ public class Chat_Activity extends Fragment {
         rootref.updateChildren(user_map, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-             //if first message then set the visibility of whoops layout gone
-              String inbox_sender_ref = "Inbox" + "/" + senderid + "/" + Receiverid;
-              String inbox_receiver_ref = "Inbox" + "/" + Receiverid + "/" + senderid;
+                //if first message then set the visibility of whoops layout gone
+                String inbox_sender_ref = "Inbox" + "/" + senderid + "/" + Receiverid;
+                String inbox_receiver_ref = "Inbox" + "/" + Receiverid + "/" + senderid;
 
-                HashMap sendermap=new HashMap<>();
-                sendermap.put("rid",senderid);
-                sendermap.put("name",MainMenuActivity.user_name);
-                sendermap.put("pic",MainMenuActivity.user_pic);
-                sendermap.put("msg",message);
-                sendermap.put("status","0");
-                sendermap.put("timestamp", -1*System.currentTimeMillis());
-                sendermap.put("date",formattedDate);
+                HashMap sendermap = new HashMap<>();
+                sendermap.put("rid", senderid);
+                sendermap.put("name", MainMenuActivity.user_name);
+                sendermap.put("pic", MainMenuActivity.user_pic);
+                sendermap.put("msg", message);
+                sendermap.put("status", "0");
+                sendermap.put("timestamp", -1 * System.currentTimeMillis());
+                sendermap.put("date", formattedDate);
 
-                HashMap receivermap=new HashMap<>();
-                receivermap.put("rid",Receiverid);
-                receivermap.put("name",Receiver_name);
-                receivermap.put("pic",Receiver_pic);
-                receivermap.put("msg",message);
-                receivermap.put("status","1");
-                receivermap.put("timestamp", -1*System.currentTimeMillis());
-                receivermap.put("date",formattedDate);
+                HashMap receivermap = new HashMap<>();
+                receivermap.put("rid", Receiverid);
+                receivermap.put("name", Receiver_name);
+                receivermap.put("pic", Receiver_pic);
+                receivermap.put("msg", message);
+                receivermap.put("status", "1");
+                receivermap.put("timestamp", -1 * System.currentTimeMillis());
+                receivermap.put("date", formattedDate);
 
                 HashMap both_user_map = new HashMap<>();
-                both_user_map.put(inbox_sender_ref , receivermap);
-                both_user_map.put(inbox_receiver_ref , sendermap);
+                both_user_map.put(inbox_sender_ref, receivermap);
+                both_user_map.put(inbox_receiver_ref, sendermap);
 
                 Adduser_to_inbox.updateChildren(both_user_map).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
 
-                        if(is_match_exits)
-                        Call_api_to_done_chat();
+                        if (is_match_exits)
+                            Call_api_to_done_chat();
 
 
-                        Chat_Activity.SendPushNotification(rootref,MainMenuActivity.user_name,message,
+                        Chat_Activity.SendPushNotification(rootref, MainMenuActivity.user_name, message,
                                 MainMenuActivity.user_pic,
-                                token,Receiverid,senderid,is_match_exits);
+                                token, Receiverid, senderid, is_match_exits);
 
 
                     }
@@ -721,25 +706,25 @@ public class Chat_Activity extends Fragment {
 
 
     // this method will upload the image in chhat
-    public void UploadImage(ByteArrayOutputStream byteArrayOutputStream){
+    public void UploadImage(ByteArrayOutputStream byteArrayOutputStream) {
         byte[] data = byteArrayOutputStream.toByteArray();
         Date c = Calendar.getInstance().getTime();
         final String formattedDate = Variables.df.format(c);
 
-        StorageReference reference= FirebaseStorage.getInstance().getReference();
-        DatabaseReference dref=rootref.child("chat").child(senderid+"-"+Receiverid).push();
-        final String key=dref.getKey();
-        uploading_image_id=key;
-       final String current_user_ref = "chat" + "/" + senderid + "-" + Receiverid;
-       final String chat_user_ref = "chat" + "/" + Receiverid + "-" + senderid;
+        StorageReference reference = FirebaseStorage.getInstance().getReference();
+        DatabaseReference dref = rootref.child("chat").child(senderid + "-" + Receiverid).push();
+        final String key = dref.getKey();
+        uploading_image_id = key;
+        final String current_user_ref = "chat" + "/" + senderid + "-" + Receiverid;
+        final String chat_user_ref = "chat" + "/" + Receiverid + "-" + senderid;
 
         HashMap my_dummi_pic_map = new HashMap<>();
         my_dummi_pic_map.put("receiver_id", Receiverid);
         my_dummi_pic_map.put("sender_id", senderid);
-        my_dummi_pic_map.put("chat_id",key);
+        my_dummi_pic_map.put("chat_id", key);
         my_dummi_pic_map.put("text", "");
-        my_dummi_pic_map.put("type","image");
-        my_dummi_pic_map.put("pic_url","none");
+        my_dummi_pic_map.put("type", "image");
+        my_dummi_pic_map.put("pic_url", "none");
         my_dummi_pic_map.put("status", "0");
         my_dummi_pic_map.put("time", "");
         my_dummi_pic_map.put("sender_name", MainMenuActivity.user_name);
@@ -748,20 +733,20 @@ public class Chat_Activity extends Fragment {
         HashMap dummy_push = new HashMap<>();
         dummy_push.put(current_user_ref + "/" + key, my_dummi_pic_map);
         rootref.updateChildren(dummy_push);
-
-        reference.child("images").child(key+".jpg").putBytes(data).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        final StorageReference fileLocation = reference.child("images").child(key + ".jpg");
+        fileLocation.putBytes(data).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-                uploading_image_id="none";
+                uploading_image_id = "none";
 
                 HashMap message_user_map = new HashMap<>();
                 message_user_map.put("receiver_id", Receiverid);
                 message_user_map.put("sender_id", senderid);
-                message_user_map.put("chat_id",key);
+                message_user_map.put("chat_id", key);
                 message_user_map.put("text", "");
-                message_user_map.put("type","image");
-                message_user_map.put("pic_url",taskSnapshot.getDownloadUrl().toString());
+                message_user_map.put("type", "image");
+                message_user_map.put("pic_url", fileLocation.getDownloadUrl().toString());
                 message_user_map.put("status", "0");
                 message_user_map.put("time", "");
                 message_user_map.put("sender_name", MainMenuActivity.user_name);
@@ -778,38 +763,38 @@ public class Chat_Activity extends Fragment {
                         String inbox_sender_ref = "Inbox" + "/" + senderid + "/" + Receiverid;
                         String inbox_receiver_ref = "Inbox" + "/" + Receiverid + "/" + senderid;
 
-                        HashMap sendermap=new HashMap<>();
-                        sendermap.put("rid",senderid);
-                        sendermap.put("name",MainMenuActivity.user_name);
-                        sendermap.put("pic",MainMenuActivity.user_pic);
-                        sendermap.put("msg","Send an image...");
-                        sendermap.put("status","0");
-                        sendermap.put("timestamp", -1*System.currentTimeMillis());
-                        sendermap.put("date",formattedDate);
+                        HashMap sendermap = new HashMap<>();
+                        sendermap.put("rid", senderid);
+                        sendermap.put("name", MainMenuActivity.user_name);
+                        sendermap.put("pic", MainMenuActivity.user_pic);
+                        sendermap.put("msg", "Send an image...");
+                        sendermap.put("status", "0");
+                        sendermap.put("timestamp", -1 * System.currentTimeMillis());
+                        sendermap.put("date", formattedDate);
 
-                        HashMap receivermap=new HashMap<>();
-                        receivermap.put("rid",Receiverid);
-                        receivermap.put("name",Receiver_name);
-                        receivermap.put("pic",Receiver_pic);
-                        receivermap.put("msg","Send an image...");
-                        receivermap.put("status","1");
-                        receivermap.put("timestamp", -1*System.currentTimeMillis());
-                        receivermap.put("date",formattedDate);
+                        HashMap receivermap = new HashMap<>();
+                        receivermap.put("rid", Receiverid);
+                        receivermap.put("name", Receiver_name);
+                        receivermap.put("pic", Receiver_pic);
+                        receivermap.put("msg", "Send an image...");
+                        receivermap.put("status", "1");
+                        receivermap.put("timestamp", -1 * System.currentTimeMillis());
+                        receivermap.put("date", formattedDate);
 
                         HashMap both_user_map = new HashMap<>();
-                        both_user_map.put(inbox_sender_ref , receivermap);
-                        both_user_map.put(inbox_receiver_ref , sendermap);
+                        both_user_map.put(inbox_sender_ref, receivermap);
+                        both_user_map.put(inbox_receiver_ref, sendermap);
 
                         Adduser_to_inbox.updateChildren(both_user_map).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
 
-                                if(is_match_exits)
+                                if (is_match_exits)
                                     Call_api_to_done_chat();
 
-                                Chat_Activity.SendPushNotification(rootref,MainMenuActivity.user_name,"Send an Image....",
+                                Chat_Activity.SendPushNotification(rootref, MainMenuActivity.user_name, "Send an Image....",
                                         MainMenuActivity.user_pic,
-                                        token,Receiverid,senderid,is_match_exits);
+                                        token, Receiverid, senderid, is_match_exits);
 
 
                             }
@@ -822,13 +807,13 @@ public class Chat_Activity extends Fragment {
 
 
     // this method will upload the image in chhat
-    public void SendGif(String url){
+    public void SendGif(String url) {
         Date c = Calendar.getInstance().getTime();
         final String formattedDate = Variables.df.format(c);
 
 
-        DatabaseReference dref=rootref.child("chat").child(senderid+"-"+Receiverid).push();
-        final String key=dref.getKey();
+        DatabaseReference dref = rootref.child("chat").child(senderid + "-" + Receiverid).push();
+        final String key = dref.getKey();
 
         String current_user_ref = "chat" + "/" + senderid + "-" + Receiverid;
         String chat_user_ref = "chat" + "/" + Receiverid + "-" + senderid;
@@ -836,10 +821,10 @@ public class Chat_Activity extends Fragment {
         HashMap message_user_map = new HashMap<>();
         message_user_map.put("receiver_id", Receiverid);
         message_user_map.put("sender_id", senderid);
-        message_user_map.put("chat_id",key);
+        message_user_map.put("chat_id", key);
         message_user_map.put("text", "");
-        message_user_map.put("type","gif");
-        message_user_map.put("pic_url",url);
+        message_user_map.put("type", "gif");
+        message_user_map.put("pic_url", url);
         message_user_map.put("status", "0");
         message_user_map.put("time", "");
         message_user_map.put("sender_name", MainMenuActivity.user_name);
@@ -856,35 +841,35 @@ public class Chat_Activity extends Fragment {
                 String inbox_receiver_ref = "Inbox" + "/" + Receiverid + "/" + senderid;
 
 
-                HashMap sendermap=new HashMap<>();
-                sendermap.put("rid",senderid);
-                sendermap.put("name",MainMenuActivity.user_name);
-                sendermap.put("pic",MainMenuActivity.user_pic);
-                sendermap.put("msg","Send an gif image...");
-                sendermap.put("status","0");
-                sendermap.put("timestamp", -1*System.currentTimeMillis());
-                sendermap.put("date",formattedDate);
+                HashMap sendermap = new HashMap<>();
+                sendermap.put("rid", senderid);
+                sendermap.put("name", MainMenuActivity.user_name);
+                sendermap.put("pic", MainMenuActivity.user_pic);
+                sendermap.put("msg", "Send an gif image...");
+                sendermap.put("status", "0");
+                sendermap.put("timestamp", -1 * System.currentTimeMillis());
+                sendermap.put("date", formattedDate);
 
-                HashMap receivermap=new HashMap<>();
-                receivermap.put("rid",Receiverid);
-                receivermap.put("name",Receiver_name);
-                receivermap.put("pic",Receiver_pic);
-                receivermap.put("msg","Send an gif image...");
-                receivermap.put("status","1");
-                receivermap.put("timestamp", -1*System.currentTimeMillis());
-                receivermap.put("date",formattedDate);
+                HashMap receivermap = new HashMap<>();
+                receivermap.put("rid", Receiverid);
+                receivermap.put("name", Receiver_name);
+                receivermap.put("pic", Receiver_pic);
+                receivermap.put("msg", "Send an gif image...");
+                receivermap.put("status", "1");
+                receivermap.put("timestamp", -1 * System.currentTimeMillis());
+                receivermap.put("date", formattedDate);
 
                 HashMap both_user_map = new HashMap<>();
-                both_user_map.put(inbox_sender_ref , receivermap);
-                both_user_map.put(inbox_receiver_ref , sendermap);
+                both_user_map.put(inbox_sender_ref, receivermap);
+                both_user_map.put(inbox_receiver_ref, sendermap);
 
                 Adduser_to_inbox.updateChildren(both_user_map).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
 
-                        Chat_Activity.SendPushNotification(rootref,MainMenuActivity.user_name,"Send an gif image....",
+                        Chat_Activity.SendPushNotification(rootref, MainMenuActivity.user_name, "Send an gif image....",
                                 MainMenuActivity.user_pic,
-                                token,Receiverid,senderid,is_match_exits);
+                                token, Receiverid, senderid, is_match_exits);
 
                     }
                 });
@@ -894,34 +879,32 @@ public class Chat_Activity extends Fragment {
     }
 
 
-
-
-
     // this method will change the status to ensure that
     // user is seen all the message or not (in both chat node and Chatinbox node)
-    public void ChangeStatus(){
+    public void ChangeStatus() {
         final Date c = Calendar.getInstance().getTime();
         final DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-        final Query query1 = reference.child("chat").child(Receiverid+"-"+senderid).orderByChild("status").equalTo("0");
-        final Query query2 = reference.child("chat").child(senderid+"-"+Receiverid).orderByChild("status").equalTo("0");
+        final Query query1 = reference.child("chat").child(Receiverid + "-" + senderid).orderByChild("status").equalTo("0");
+        final Query query2 = reference.child("chat").child(senderid + "-" + Receiverid).orderByChild("status").equalTo("0");
 
-        final DatabaseReference inbox_change_status_1=reference.child("Inbox").child(senderid+"/"+Receiverid);
-        final DatabaseReference inbox_change_status_2=reference.child("Inbox").child(Receiverid+"/"+senderid);
+        final DatabaseReference inbox_change_status_1 = reference.child("Inbox").child(senderid + "/" + Receiverid);
+        final DatabaseReference inbox_change_status_2 = reference.child("Inbox").child(Receiverid + "/" + senderid);
 
         query1.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot nodeDataSnapshot : dataSnapshot.getChildren()) {
-                    if(!nodeDataSnapshot.child("sender_id").getValue().equals(senderid)){
+                    if (!nodeDataSnapshot.child("sender_id").getValue().equals(senderid)) {
                         String key = nodeDataSnapshot.getKey(); // this key is `K1NRz9l5PU_0CFDtgXz`
                         String path = "chat" + "/" + dataSnapshot.getKey() + "/" + key;
                         HashMap<String, Object> result = new HashMap<>();
                         result.put("status", "1");
-                        result.put("time",Variables.df2.format(c));
+                        result.put("time", Variables.df2.format(c));
                         reference.child(path).updateChildren(result);
                     }
                 }
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
@@ -932,12 +915,12 @@ public class Chat_Activity extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot nodeDataSnapshot : dataSnapshot.getChildren()) {
-                    if(!nodeDataSnapshot.child("sender_id").getValue().equals(senderid)){
+                    if (!nodeDataSnapshot.child("sender_id").getValue().equals(senderid)) {
                         String key = nodeDataSnapshot.getKey(); // this key is `K1NRz9l5PU_0CFDtgXz`
                         String path = "chat" + "/" + dataSnapshot.getKey() + "/" + key;
                         HashMap<String, Object> result = new HashMap<>();
                         result.put("status", "1");
-                        result.put("time",Variables.df2.format(c));
+                        result.put("time", Variables.df2.format(c));
                         reference.child(path).updateChildren(result);
                     }
                 }
@@ -953,8 +936,8 @@ public class Chat_Activity extends Fragment {
         inbox_change_status_1.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    if(dataSnapshot.child("rid").getValue().equals(Receiverid)){
+                if (dataSnapshot.exists()) {
+                    if (dataSnapshot.child("rid").getValue().equals(Receiverid)) {
                         HashMap<String, Object> result = new HashMap<>();
                         result.put("status", "1");
                         inbox_change_status_1.updateChildren(result);
@@ -974,8 +957,8 @@ public class Chat_Activity extends Fragment {
         inbox_change_status_2.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    if(dataSnapshot.child("rid").getValue().equals(Receiverid)){
+                if (dataSnapshot.exists()) {
+                    if (dataSnapshot.child("rid").getValue().equals(Receiverid)) {
                         HashMap<String, Object> result = new HashMap<>();
                         result.put("status", "1");
                         inbox_change_status_2.updateChildren(result);
@@ -993,9 +976,9 @@ public class Chat_Activity extends Fragment {
     }
 
 
-    public void download_audio(final ProgressBar p_bar, Chat_GetSet item){
-      p_bar.setVisibility(View.VISIBLE);
-        int downloadId = PRDownloader.download(item.getPic_url(), direct.getPath(), item.getChat_id()+".mp3")
+    public void download_audio(final ProgressBar p_bar, Chat_GetSet item) {
+        p_bar.setVisibility(View.VISIBLE);
+        int downloadId = PRDownloader.download(item.getPic_url(), direct.getPath(), item.getChat_id() + ".mp3")
                 .build()
                 .setOnStartOrResumeListener(new OnStartOrResumeListener() {
                     @Override
@@ -1038,7 +1021,7 @@ public class Chat_Activity extends Fragment {
     }
 
     //this method will get the big size of image in private chat
-    public void OpenAudio(String path){
+    public void OpenAudio(String path) {
         Play_Audio_F play_audio_f = new Play_Audio_F();
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
         Bundle args = new Bundle();
@@ -1050,15 +1033,12 @@ public class Chat_Activity extends Fragment {
     }
 
 
-
-
-
     // this is the delete message diloge which will show after long press in chat message
     private void delete_Message(final Chat_GetSet chat_getSet) {
 
-        final CharSequence[] options = { "Delete this message","Cancel" };
+        final CharSequence[] options = {"Delete this message", "Cancel"};
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(context,R.style.AlertDialogCustom);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.AlertDialogCustom);
 
         builder.setTitle(null);
 
@@ -1073,10 +1053,7 @@ public class Chat_Activity extends Fragment {
                 {
                     update_message(chat_getSet);
 
-                }
-
-
-                else if (options[item].equals("Cancel")) {
+                } else if (options[item].equals("Cancel")) {
 
                     dialog.dismiss();
 
@@ -1092,7 +1069,7 @@ public class Chat_Activity extends Fragment {
 
 
     // we will update the privious message means we will tells the other user that we have seen your message
-    public void update_message(Chat_GetSet item){
+    public void update_message(Chat_GetSet item) {
         final String current_user_ref = "chat" + "/" + senderid + "-" + Receiverid;
         final String chat_user_ref = "chat" + "/" + Receiverid + "-" + senderid;
 
@@ -1100,10 +1077,10 @@ public class Chat_Activity extends Fragment {
         final HashMap message_user_map = new HashMap<>();
         message_user_map.put("receiver_id", item.getReceiver_id());
         message_user_map.put("sender_id", item.getSender_id());
-        message_user_map.put("chat_id",item.getChat_id());
+        message_user_map.put("chat_id", item.getChat_id());
         message_user_map.put("text", "Delete this message");
-        message_user_map.put("type","delete");
-        message_user_map.put("pic_url","");
+        message_user_map.put("type", "delete");
+        message_user_map.put("pic_url", "");
         message_user_map.put("status", "0");
         message_user_map.put("time", "");
         message_user_map.put("sender_name", MainMenuActivity.user_name);
@@ -1123,16 +1100,15 @@ public class Chat_Activity extends Fragment {
     }
 
 
-
     // this is the block dialog which will be show when user click on alert buttom of Top right in screen
     private void block_user_dialog() {
         final CharSequence[] options;
-        if(is_user_already_block)
-         options = new CharSequence[]{"Unmatch this User", "Unblock this User", "Cancel"};
+        if (is_user_already_block)
+            options = new CharSequence[]{"Unmatch this User", "Unblock this User", "Cancel"};
         else
             options = new CharSequence[]{"Unmatch this User", "Block this User", "Cancel"};
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(context,R.style.AlertDialogCustom);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.AlertDialogCustom);
 
         builder.setTitle(null);
 
@@ -1142,20 +1118,17 @@ public class Chat_Activity extends Fragment {
 
             public void onClick(DialogInterface dialog, int item) {
 
-                if(options[item].equals("Block this User")){
+                if (options[item].equals("Block this User")) {
 
                     Block_user();
-                }
-                else if(options[item].equals("Unblock this User")){
+                } else if (options[item].equals("Unblock this User")) {
 
                     UnBlock_user();
                 }
-                if(options[item].equals("Unmatch this User")){
+                if (options[item].equals("Unmatch this User")) {
 
                     Call_api_to_Un_match_user();
-                }
-
-                else if (options[item].equals("Cancel")) {
+                } else if (options[item].equals("Cancel")) {
 
                     dialog.dismiss();
 
@@ -1170,7 +1143,7 @@ public class Chat_Activity extends Fragment {
     }
 
 
-    public void Block_user(){
+    public void Block_user() {
         rootref.child("Inbox")
                 .child(Receiverid)
                 .child(MainMenuActivity.user_id).child("block").setValue("1");
@@ -1178,14 +1151,13 @@ public class Chat_Activity extends Fragment {
 
     }
 
-    public void UnBlock_user(){
+    public void UnBlock_user() {
         rootref.child("Inbox")
                 .child(Receiverid)
                 .child(MainMenuActivity.user_id).child("block").setValue("0");
         Toast.makeText(context, "User UnBlocked", Toast.LENGTH_SHORT).show();
 
     }
-
 
 
     // we will delete only the today message so it is important to check the given message is the today message or not
@@ -1223,11 +1195,10 @@ public class Chat_Activity extends Fragment {
     // this method will show the dialog of selete the either take a picture form camera or pick the image from gallary
     private void selectImage() {
 
-        final CharSequence[] options = { "Take Photo", "Choose from Gallery","Cancel" };
+        final CharSequence[] options = {"Take Photo", "Choose from Gallery", "Cancel"};
 
 
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(context,R.style.AlertDialogCustom);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.AlertDialogCustom);
 
         builder.setTitle("Add Photo!");
 
@@ -1240,22 +1211,18 @@ public class Chat_Activity extends Fragment {
                 if (options[item].equals("Take Photo"))
 
                 {
-                    if(check_camrapermission())
-                         openCameraIntent();
+                    if (check_camrapermission())
+                        openCameraIntent();
 
-                }
-
-                else if (options[item].equals("Choose from Gallery"))
+                } else if (options[item].equals("Choose from Gallery"))
 
                 {
 
-                    if(check_ReadStoragepermission()) {
+                    if (check_ReadStoragepermission()) {
                         Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                         startActivityForResult(intent, 2);
                     }
-                }
-
-                else if (options[item].equals("Cancel")) {
+                } else if (options[item].equals("Cancel")) {
 
                     dialog.dismiss();
 
@@ -1272,9 +1239,7 @@ public class Chat_Activity extends Fragment {
 
     // below tis the four types of permission
     //get the permission to record audio
-    public boolean check_Recordpermission(){
-
-
+    public boolean check_Recordpermission() {
 
 
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
@@ -1288,34 +1253,33 @@ public class Chat_Activity extends Fragment {
     }
 
     private boolean check_camrapermission() {
-    /*
-     * Request location permission, so that we can get the location of the
-     * device. The result of the permission request is handled by a callback,
-     * onRequestPermissionsResult.
-     */
+        /*
+         * Request location permission, so that we can get the location of the
+         * device. The result of the permission request is handled by a callback,
+         * onRequestPermissionsResult.
+         */
         if (ContextCompat.checkSelfPermission(context,
                 Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
 
-           return true;
+            return true;
 
         } else {
-           requestPermissions(
+            requestPermissions(
                     new String[]{Manifest.permission.CAMERA}, Variables.permission_camera_code);
         }
         return false;
     }
 
-    private boolean check_ReadStoragepermission(){
+    private boolean check_ReadStoragepermission() {
         if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
                 Manifest.permission.READ_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED){
+                == PackageManager.PERMISSION_GRANTED) {
             return true;
-        }
-        else {
+        } else {
             try {
                 requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                        Variables.permission_Read_data );
+                        Variables.permission_Read_data);
             } catch (Exception e) {
                 e.printStackTrace();
                 throw e;
@@ -1324,16 +1288,15 @@ public class Chat_Activity extends Fragment {
         return false;
     }
 
-    private boolean check_writeStoragepermission(){
+    private boolean check_writeStoragepermission() {
         if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED){
+                == PackageManager.PERMISSION_GRANTED) {
             return true;
-        }
-        else {
+        } else {
             try {
                 requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        Variables.permission_write_data );
+                        Variables.permission_write_data);
             } catch (Exception e) {
                 e.printStackTrace();
                 throw e;
@@ -1385,12 +1348,11 @@ public class Chat_Activity extends Fragment {
     }
 
 
-
     // below three method is related with taking the picture from camera
     private void openCameraIntent() {
         Intent pictureIntent = new Intent(
                 MediaStore.ACTION_IMAGE_CAPTURE);
-        if(pictureIntent.resolveActivity(getActivity().getPackageManager()) != null){
+        if (pictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
             //Create a file to store the image
             File photoFile = null;
             try {
@@ -1408,6 +1370,7 @@ public class Chat_Activity extends Fragment {
     }
 
     String imageFilePath;
+
     private File createImageFile() throws IOException {
         String timeStamp =
                 new SimpleDateFormat("yyyyMMdd_HHmmss",
@@ -1425,24 +1388,22 @@ public class Chat_Activity extends Fragment {
         return image;
     }
 
-    public  String getPath(Uri uri ) {
+    public String getPath(Uri uri) {
         String result = null;
-        String[] proj = { MediaStore.Images.Media.DATA };
-        Cursor cursor = context.getContentResolver( ).query( uri, proj, null, null, null );
-        if(cursor != null){
-            if ( cursor.moveToFirst( ) ) {
-                int column_index = cursor.getColumnIndexOrThrow( proj[0] );
-                result = cursor.getString( column_index );
+        String[] proj = {MediaStore.Images.Media.DATA};
+        Cursor cursor = context.getContentResolver().query(uri, proj, null, null, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                int column_index = cursor.getColumnIndexOrThrow(proj[0]);
+                result = cursor.getString(column_index);
             }
-            cursor.close( );
+            cursor.close();
         }
-        if(result == null) {
+        if (result == null) {
             result = "Not found";
         }
         return result;
     }
-
-
 
 
     //on image select activity result
@@ -1457,7 +1418,7 @@ public class Chat_Activity extends Fragment {
                 Matrix matrix = new Matrix();
                 try {
                     ExifInterface exif = new ExifInterface(imageFilePath);
-                   int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
+                    int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
                     switch (orientation) {
                         case ExifInterface.ORIENTATION_ROTATE_90:
                             matrix.postRotate(90);
@@ -1473,11 +1434,11 @@ public class Chat_Activity extends Fragment {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                Uri selectedImage =(Uri.fromFile(new File(imageFilePath)));
+                Uri selectedImage = (Uri.fromFile(new File(imageFilePath)));
 
                 InputStream imageStream = null;
                 try {
-                    imageStream =getActivity().getContentResolver().openInputStream(selectedImage);
+                    imageStream = getActivity().getContentResolver().openInputStream(selectedImage);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -1487,19 +1448,17 @@ public class Chat_Activity extends Fragment {
                 rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos);
                 UploadImage(baos);
 
-            }
-
-            else if (requestCode == 2) {
+            } else if (requestCode == 2) {
                 Uri selectedImage = data.getData();
                 InputStream imageStream = null;
                 try {
-                    imageStream =getActivity().getContentResolver().openInputStream(selectedImage);
+                    imageStream = getActivity().getContentResolver().openInputStream(selectedImage);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
                 final Bitmap imagebitmap = BitmapFactory.decodeStream(imageStream);
 
-                String path=getPath(selectedImage);
+                String path = getPath(selectedImage);
                 Matrix matrix = new Matrix();
                 ExifInterface exif = null;
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
@@ -1534,46 +1493,42 @@ public class Chat_Activity extends Fragment {
     }
 
 
-
-
     // send the type indicator if the user is typing message
-    public void SendTypingIndicator(boolean indicate){
+    public void SendTypingIndicator(boolean indicate) {
         // if the type incator is present then we remove it if not then we create the typing indicator
-        if(indicate){
+        if (indicate) {
             final HashMap message_user_map = new HashMap<>();
             message_user_map.put("receiver_id", Receiverid);
             message_user_map.put("sender_id", senderid);
 
-             send_typing_indication=FirebaseDatabase.getInstance().getReference().child("typing_indicator");
-            send_typing_indication.child(senderid+"-"+Receiverid).setValue(message_user_map).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                send_typing_indication.child(Receiverid+"-"+senderid).setValue(message_user_map).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-
-                    }
-                });
-            }
-        });
-        }
-
-        else {
-            send_typing_indication=FirebaseDatabase.getInstance().getReference().child("typing_indicator");
-
-            send_typing_indication.child(senderid+"-"+Receiverid).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+            send_typing_indication = FirebaseDatabase.getInstance().getReference().child("typing_indicator");
+            send_typing_indication.child(senderid + "-" + Receiverid).setValue(message_user_map).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    send_typing_indication.child(Receiverid + "-" + senderid).setValue(message_user_map).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-
-                       send_typing_indication.child(Receiverid+"-"+senderid).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                           @Override
-                           public void onComplete(@NonNull Task<Void> task) {
-
-                           }
-                       });
+                        public void onSuccess(Void aVoid) {
 
                         }
                     });
+                }
+            });
+        } else {
+            send_typing_indication = FirebaseDatabase.getInstance().getReference().child("typing_indicator");
+
+            send_typing_indication.child(senderid + "-" + Receiverid).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+
+                    send_typing_indication.child(Receiverid + "-" + senderid).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+
+                        }
+                    });
+
+                }
+            });
 
         }
 
@@ -1582,38 +1537,37 @@ public class Chat_Activity extends Fragment {
 
     // receive the type indication to show that your friend is typing or not
     LinearLayout mainlayout;
-    public void ReceivetypeIndication(){
-        mainlayout=view.findViewById(R.id.typeindicator);
 
-        receive_typing_indication=FirebaseDatabase.getInstance().getReference().child("typing_indicator");
+    public void ReceivetypeIndication() {
+        mainlayout = view.findViewById(R.id.typeindicator);
+
+        receive_typing_indication = FirebaseDatabase.getInstance().getReference().child("typing_indicator");
         receive_typing_indication.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                       if(dataSnapshot.child(Receiverid+"-"+senderid).exists()){
-                          String receiver= String.valueOf(dataSnapshot.child(Receiverid+"-"+senderid).child("sender_id").getValue());
-                           if(receiver.equals(Receiverid)){
-                               mainlayout.setVisibility(View.VISIBLE);
-                           }
-                       }
-                       else {
-                           mainlayout.setVisibility(View.GONE);
-                       }
+                if (dataSnapshot.child(Receiverid + "-" + senderid).exists()) {
+                    String receiver = String.valueOf(dataSnapshot.child(Receiverid + "-" + senderid).child("sender_id").getValue());
+                    if (receiver.equals(Receiverid)) {
+                        mainlayout.setVisibility(View.VISIBLE);
                     }
+                } else {
+                    mainlayout.setVisibility(View.GONE);
+                }
+            }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
-                    }
-                });
+            }
+        });
     }
-
 
 
     // on destory delete the typing indicator
     @Override
     public void onDestroy() {
         super.onDestroy();
-        uploading_image_id="none";
+        uploading_image_id = "none";
         SendTypingIndicator(false);
         query_getchat.removeEventListener(eventListener);
         my_block_status_query.removeEventListener(my_inbox_listener);
@@ -1624,7 +1578,7 @@ public class Chat_Activity extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        uploading_image_id="none";
+        uploading_image_id = "none";
         SendTypingIndicator(false);
         query_getchat.removeEventListener(eventListener);
         my_block_status_query.removeEventListener(my_inbox_listener);
@@ -1633,7 +1587,7 @@ public class Chat_Activity extends Fragment {
 
 
     //this method will get the big size of image in private chat
-    public void OpenfullsizeImage(Chat_GetSet item){
+    public void OpenfullsizeImage(Chat_GetSet item) {
         See_Full_Image_F see_image_f = new See_Full_Image_F();
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
         transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
@@ -1647,18 +1601,17 @@ public class Chat_Activity extends Fragment {
     }
 
 
-
-
     // this is related with the list of Gifs that is show in the list below
     Gif_Adapter gif_adapter;
-    final ArrayList<String> url_list=new ArrayList<>();
+    final ArrayList<String> url_list = new ArrayList<>();
     RecyclerView gips_list;
     GPHApi client = new GPHApiClient(Variables.gif_api_key1);
-    public void GetGipy(){
+
+    public void GetGipy() {
         url_list.clear();
-        gips_list=view.findViewById(R.id.gif_recylerview);
-        gips_list.setLayoutManager(new LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false));
-        gif_adapter=new Gif_Adapter(context, url_list, new Gif_Adapter.OnItemClickListener() {
+        gips_list = view.findViewById(R.id.gif_recylerview);
+        gips_list.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+        gif_adapter = new Gif_Adapter(context, url_list, new Gif_Adapter.OnItemClickListener() {
             @Override
             public void onItemClick(String item) {
                 SendGif(item);
@@ -1667,7 +1620,7 @@ public class Chat_Activity extends Fragment {
         });
         gips_list.setAdapter(gif_adapter);
 
-        client.trending(MediaType.gif, null, null, null,  new CompletionHandler<ListMediaResponse>() {
+        client.trending(MediaType.gif, null, null, null, new CompletionHandler<ListMediaResponse>() {
             @Override
             public void onComplete(ListMediaResponse result, Throwable e) {
                 if (result == null) {
@@ -1690,7 +1643,7 @@ public class Chat_Activity extends Fragment {
 
 
     // if we want to search the gif then this mehtod is immportaant
-    public void searchGif(String search){
+    public void searchGif(String search) {
         /// Gif Search
         client.search(search, MediaType.gif, null, null, null, null, new CompletionHandler<ListMediaResponse>() {
             @Override
@@ -1716,7 +1669,7 @@ public class Chat_Activity extends Fragment {
 
 
     // slide the view from below itself to the current position
-    public void slideUp(){
+    public void slideUp() {
         message.setHint("Search Gifs");
         upload_gif_btn.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_gif_image));
         gif_layout.setVisibility(View.VISIBLE);
@@ -1733,7 +1686,7 @@ public class Chat_Activity extends Fragment {
 
 
     // slide the view from its current position to below itself
-    public void slideDown(){
+    public void slideDown() {
         message.setHint("Type your message here...");
         message.setText("");
         upload_gif_btn.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_gif_image_gray));
@@ -1765,33 +1718,25 @@ public class Chat_Activity extends Fragment {
     }
 
 
-
-
-
-
-
-
-
     // this mehtos the will add a node of notification in to database
     // then our firebase cloud function will listen node and send the notification to spacific user
     public static void SendPushNotification(DatabaseReference rootref,
-                                            String name,String message,
-                                            String picture,String token,
-                                            String receiverid,String senderid,
-                                            boolean is_match_exits){
+                                            String name, String message,
+                                            String picture, String token,
+                                            String receiverid, String senderid,
+                                            boolean is_match_exits) {
 
-        Map<String,String> notimap= new HashMap<>();
-        notimap.put("name",name);
-        notimap.put("message",message);
-        notimap.put("picture",picture);
-        notimap.put("token",token);
+        Map<String, String> notimap = new HashMap<>();
+        notimap.put("name", name);
+        notimap.put("message", message);
+        notimap.put("picture", picture);
+        notimap.put("token", token);
         notimap.put("receiverid", receiverid);
-        notimap.put("action_type","message");
+        notimap.put("action_type", "message");
         rootref.child("notifications").child(senderid).push().setValue(notimap);
 
 
     }
-
 
 
     // this will call the api that the Matched users has done the Chat then api will remove the Match List
@@ -1805,7 +1750,7 @@ public class Chat_Activity extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.d("resp",parameters.toString());
+        Log.d("resp", parameters.toString());
 
         RequestQueue rq = Volley.newRequestQueue(context);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
@@ -1813,14 +1758,14 @@ public class Chat_Activity extends Fragment {
 
                     @Override
                     public void onResponse(JSONObject response) {
-                        String respo=response.toString();
+                        String respo = response.toString();
 
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
 
-                        Log.d("respo",error.toString());
+                        Log.d("respo", error.toString());
                     }
                 });
         jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(30000,
@@ -1829,7 +1774,6 @@ public class Chat_Activity extends Fragment {
         rq.getCache().clear();
         rq.add(jsonObjectRequest);
     }
-
 
 
     // this will call the api to unmatch the user and api will remove all chat as well their inbox node
@@ -1843,7 +1787,7 @@ public class Chat_Activity extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.d("resp",parameters.toString());
+        Log.d("resp", parameters.toString());
 
         RequestQueue rq = Volley.newRequestQueue(context);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
@@ -1851,8 +1795,8 @@ public class Chat_Activity extends Fragment {
 
                     @Override
                     public void onResponse(JSONObject response) {
-                        String respo=response.toString();
-                        Log.d("respo",respo);
+                        String respo = response.toString();
+                        Log.d("respo", respo);
                         lodding_view.cancel();
                         getActivity().onBackPressed();
 
@@ -1862,7 +1806,7 @@ public class Chat_Activity extends Fragment {
                     public void onErrorResponse(VolleyError error) {
 
                         lodding_view.cancel();
-                        Log.d("respo",error.toString());
+                        Log.d("respo", error.toString());
                     }
                 });
         jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(30000,
@@ -1874,18 +1818,17 @@ public class Chat_Activity extends Fragment {
 
 
     // open the view of Edit profile where 6 pic is visible
-    public void Profile_detail(){
+    public void Profile_detail() {
         Profile_Details_F profile_details_f = new Profile_Details_F();
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
         transaction.setCustomAnimations(R.anim.in_from_bottom, R.anim.out_to_top, R.anim.in_from_top, R.anim.out_from_bottom);
         Bundle args = new Bundle();
-        args.putString("user_id",Receiverid);
+        args.putString("user_id", Receiverid);
         profile_details_f.setArguments(args);
         transaction.addToBackStack(null);
         transaction.replace(R.id.Chat_F, profile_details_f).commit();
 
     }
-
 
 
 }

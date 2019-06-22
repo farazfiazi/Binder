@@ -29,11 +29,13 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+
 import net.fabapps.binder.CodeClasses.Functions;
 import net.fabapps.binder.CodeClasses.Variables;
 import net.fabapps.binder.Main_Menu.MainMenuActivity;
 import net.fabapps.binder.Profile.Profile_F;
 import net.fabapps.binder.R;
+
 import com.gmail.samehadar.iosdialog.IOSDialog;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
@@ -76,31 +78,29 @@ public class EditProfile_F extends Fragment {
 
     IOSDialog iosDialog;
 
-    EditText about_edit,job_title_edit,company_edit,school_edit,dateofbrith_edit;
-    RadioButton male_btn,female_btn;
+    EditText about_edit, job_title_edit, company_edit, school_edit, dateofbrith_edit;
+    RadioButton male_btn, female_btn;
 
     byte[] image_byteArray;
 
     Profile_photos_Adapter profile_photos_adapter;
 
-     ArrayList<String> images_list;
+    ArrayList<String> images_list;
 
 
-
-     TextView done_txt,profile_name_txt;
+    TextView done_txt, profile_name_txt;
 
     public EditProfile_F() {
         // Required empty public constructor
     }
 
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view= inflater.inflate(R.layout.fragment_edit_profile, container, false);
-        context=getContext();
+        view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
+        context = getContext();
 
 
         iosDialog = new IOSDialog.Builder(context)
@@ -110,25 +110,25 @@ public class EditProfile_F extends Fragment {
                 .build();
 
 
-        profile_name_txt=view.findViewById(R.id.profile_name_txt);
-        profile_name_txt.setText("About "+MainMenuActivity.user_name);
+        profile_name_txt = view.findViewById(R.id.profile_name_txt);
+        profile_name_txt.setText("About " + MainMenuActivity.user_name);
 
 
-        images_list=new ArrayList<>();
+        images_list = new ArrayList<>();
 
 
-        profile_photo_list=view.findViewById(R.id.Profile_photos_list);
+        profile_photo_list = view.findViewById(R.id.Profile_photos_list);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(context, 3);
         profile_photo_list.setLayoutManager(layoutManager);
         profile_photo_list.setHasFixedSize(false);
 
-          profile_photos_adapter=new Profile_photos_Adapter(context, images_list, new Profile_photos_Adapter.OnItemClickListener() {
+        profile_photos_adapter = new Profile_photos_Adapter(context, images_list, new Profile_photos_Adapter.OnItemClickListener() {
             @Override
-            public void onItemClick(String item,int postion, View view) {
-                if(view.getId()==R.id.cross_btn ){
-                    if(item.equals("")){
+            public void onItemClick(String item, int postion, View view) {
+                if (view.getId() == R.id.cross_btn) {
+                    if (item.equals("")) {
                         selectImage();
-                    }else {
+                    } else {
                         Call_Api_For_deletelink(item);
                         profile_photos_adapter.notifyDataSetChanged();
                     }
@@ -137,21 +137,20 @@ public class EditProfile_F extends Fragment {
         });
 
 
-
         profile_photos_adapter.setOnItemDragListener(new SimpleDragListener() {
 
             @Override
             public void onDrop(int fromPosition, int toPosition) {
                 super.onDrop(fromPosition, toPosition);
-                Log.d("resp", ""+ fromPosition+"--"+toPosition);
-                String from_image=images_list.get(fromPosition);
-                String to_image=images_list.get(toPosition);
-                if(to_image.equals("")||from_image.equals("")){
+                Log.d("resp", "" + fromPosition + "--" + toPosition);
+                String from_image = images_list.get(fromPosition);
+                String to_image = images_list.get(toPosition);
+                if (to_image.equals("") || from_image.equals("")) {
                     images_list.remove(toPosition);
-                    images_list.add(toPosition,from_image);
+                    images_list.add(toPosition, from_image);
 
                     images_list.remove(from_image);
-                    images_list.add(fromPosition,to_image);
+                    images_list.add(fromPosition, to_image);
                 }
                 profile_photos_adapter.notifyDataSetChanged();
 
@@ -160,7 +159,7 @@ public class EditProfile_F extends Fragment {
             @Override
             public void onSwiped(int pos) {
                 super.onSwiped(pos);
-                Log.d("resp", ""+ pos);
+                Log.d("resp", "" + pos);
 
             }
         });
@@ -168,21 +167,16 @@ public class EditProfile_F extends Fragment {
         profile_photo_list.setAdapter(profile_photos_adapter);
 
 
+        about_edit = view.findViewById(R.id.about_user);
+        job_title_edit = view.findViewById(R.id.jobtitle_edit);
+        company_edit = view.findViewById(R.id.company_edit);
+        school_edit = view.findViewById(R.id.school_edit);
+        dateofbrith_edit = view.findViewById(R.id.dateofbirth_edit);
 
+        male_btn = view.findViewById(R.id.male_btn);
+        female_btn = view.findViewById(R.id.female_btn);
 
-
-
-
-        about_edit=view.findViewById(R.id.about_user);
-        job_title_edit=view.findViewById(R.id.jobtitle_edit);
-        company_edit=view.findViewById(R.id.company_edit);
-        school_edit=view.findViewById(R.id.school_edit);
-        dateofbrith_edit=view.findViewById(R.id.dateofbirth_edit);
-
-        male_btn=view.findViewById(R.id.male_btn);
-        female_btn=view.findViewById(R.id.female_btn);
-
-        back_btn=view.findViewById(R.id.back_btn);
+        back_btn = view.findViewById(R.id.back_btn);
         back_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -192,19 +186,17 @@ public class EditProfile_F extends Fragment {
         });
 
 
-
-
         dateofbrith_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                Functions.Opendate_picker(context,dateofbrith_edit);
+                Functions.Opendate_picker(context, dateofbrith_edit);
 
 
             }
         });
 
-        done_txt=view.findViewById(R.id.done_txt);
+        done_txt = view.findViewById(R.id.done_txt);
         done_txt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -218,13 +210,11 @@ public class EditProfile_F extends Fragment {
     }
 
 
-
     // open the gallery when user press button to upload a picture
     private void selectImage() {
-        Intent intent = new   Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, Select_image_from_gallry_code);
     }
-
 
 
     @Override
@@ -237,8 +227,7 @@ public class EditProfile_F extends Fragment {
 
                 Uri selectedImage = data.getData();
                 beginCrop(selectedImage);
-            }
-            else if (requestCode == 123) {
+            } else if (requestCode == 123) {
                 handleCrop(resultCode, data);
             }
 
@@ -246,27 +235,26 @@ public class EditProfile_F extends Fragment {
     }
 
 
-
     // botoom there function are related to crop the image
     private void beginCrop(Uri source) {
         Uri destination = Uri.fromFile(new File(getContext().getCacheDir(), "cropped"));
-        Crop.of(source, destination).asSquare().withMaxSize(500,500).start(context,getCurrentFragment(),123);
+        Crop.of(source, destination).asSquare().withMaxSize(500, 500).start(context, getCurrentFragment(), 123);
 
     }
 
     private void handleCrop(int resultCode, Intent result) {
         if (resultCode == RESULT_OK) {
-            Uri userimageuri=Crop.getOutput(result);
+            Uri userimageuri = Crop.getOutput(result);
 
             InputStream imageStream = null;
             try {
-                imageStream =getActivity().getContentResolver().openInputStream(userimageuri);
+                imageStream = getActivity().getContentResolver().openInputStream(userimageuri);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
             final Bitmap imagebitmap = BitmapFactory.decodeStream(imageStream);
 
-            String path=userimageuri.getPath();
+            String path = userimageuri.getPath();
             Matrix matrix = new Matrix();
             android.media.ExifInterface exif = null;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
@@ -301,30 +289,31 @@ public class EditProfile_F extends Fragment {
         }
     }
 
-    public android.support.v4.app.Fragment getCurrentFragment(){
+    public android.support.v4.app.Fragment getCurrentFragment() {
         return getActivity().getSupportFragmentManager().findFragmentById(R.id.MainMenuFragment);
 
     }
 
 
     // after crop this fuction is call and it store the picture in firebase database
-    public void SavePicture(){
+    public void SavePicture() {
         iosDialog.show();
-        DatabaseReference reference= FirebaseDatabase.getInstance().getReference().child("Users");
-        String id=reference.push().getKey();
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Users");
+        String id = reference.push().getKey();
         // first we upload image after upload then get the picture url and save the group data in database
         StorageReference storageReference = FirebaseStorage.getInstance().getReference();
 
-        StorageReference filelocation = storageReference.child(MainMenuActivity.user_id)
-                .child(id+".jpg");
+        final StorageReference filelocation = storageReference.child(MainMenuActivity.user_id)
+                .child(id + ".jpg");
         filelocation.putBytes(image_byteArray).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                String url=taskSnapshot.getDownloadUrl().toString();
+                String url = filelocation.getDownloadUrl().toString();
                 Call_Api_For_uploadLink(url);
                 iosDialog.cancel();
 
-            }});
+            }
+        });
     }
 
 
@@ -335,7 +324,7 @@ public class EditProfile_F extends Fragment {
         JSONObject parameters = new JSONObject();
         try {
             parameters.put("fb_id", MainMenuActivity.user_id);
-            parameters.put("image_link",link);
+            parameters.put("image_link", link);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -346,14 +335,14 @@ public class EditProfile_F extends Fragment {
 
                     @Override
                     public void onResponse(JSONObject response) {
-                        String respo=response.toString();
-                        Log.d("responce",respo);
+                        String respo = response.toString();
+                        Log.d("responce", respo);
                         iosDialog.cancel();
 
                         try {
-                            JSONObject jsonObject=new JSONObject(respo);
-                            String code=jsonObject.optString("code");
-                            if(code.equals("200")){
+                            JSONObject jsonObject = new JSONObject(respo);
+                            String code = jsonObject.optString("code");
+                            if (code.equals("200")) {
                                 Get_User_info();
                             }
                         } catch (JSONException e) {
@@ -367,7 +356,7 @@ public class EditProfile_F extends Fragment {
                     public void onErrorResponse(VolleyError error) {
                         // TODO: Handle error
                         iosDialog.cancel();
-                        Log.d("respo",error.toString());
+                        Log.d("respo", error.toString());
                     }
                 });
         jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(30000,
@@ -378,14 +367,13 @@ public class EditProfile_F extends Fragment {
     }
 
 
-
     // this method will call when we click for delete the profile images
     private void Call_Api_For_deletelink(String link) {
         iosDialog.show();
         JSONObject parameters = new JSONObject();
         try {
             parameters.put("fb_id", MainMenuActivity.user_id);
-            parameters.put("image_link",link);
+            parameters.put("image_link", link);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -396,13 +384,13 @@ public class EditProfile_F extends Fragment {
 
                     @Override
                     public void onResponse(JSONObject response) {
-                        String respo=response.toString();
-                        Log.d("responce",respo);
+                        String respo = response.toString();
+                        Log.d("responce", respo);
                         iosDialog.cancel();
                         try {
-                            JSONObject jsonObject=new JSONObject(respo);
-                            String code=jsonObject.optString("code");
-                            if(code.equals("200")){
+                            JSONObject jsonObject = new JSONObject(respo);
+                            String code = jsonObject.optString("code");
+                            if (code.equals("200")) {
                                 Get_User_info();
                             }
                         } catch (JSONException e) {
@@ -416,7 +404,7 @@ public class EditProfile_F extends Fragment {
                     public void onErrorResponse(VolleyError error) {
                         // TODO: Handle error
                         iosDialog.cancel();
-                        Log.d("respo",error.toString());
+                        Log.d("respo", error.toString());
                     }
                 });
         jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(30000,
@@ -425,7 +413,6 @@ public class EditProfile_F extends Fragment {
         rq.getCache().clear();
         rq.add(jsonObjectRequest);
     }
-
 
 
     // below two method is used get the user pictures and about text from our server
@@ -443,8 +430,8 @@ public class EditProfile_F extends Fragment {
                 (Request.Method.POST, Variables.getUserInfo, parameters, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        String respo=response.toString();
-                        Log.d("responce",respo);
+                        String respo = response.toString();
+                        Log.d("responce", respo);
                         Parse_user_info(respo);
                     }
                 }, new Response.ErrorListener() {
@@ -452,7 +439,7 @@ public class EditProfile_F extends Fragment {
                     public void onErrorResponse(VolleyError error) {
                         // TODO: Handle error
                         iosDialog.cancel();
-                        Log.d("respo",error.toString());
+                        Log.d("respo", error.toString());
                     }
                 });
         jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(30000,
@@ -462,14 +449,14 @@ public class EditProfile_F extends Fragment {
         rq.add(jsonObjectRequest);
     }
 
-    public void Parse_user_info(String loginData){
+    public void Parse_user_info(String loginData) {
         iosDialog.cancel();
         try {
-            JSONObject jsonObject=new JSONObject(loginData);
-            String code=jsonObject.optString("code");
-            if(code.equals("200")){
-                JSONArray msg=jsonObject.getJSONArray("msg");
-                JSONObject userdata=msg.getJSONObject(0);
+            JSONObject jsonObject = new JSONObject(loginData);
+            String code = jsonObject.optString("code");
+            if (code.equals("200")) {
+                JSONArray msg = jsonObject.getJSONArray("msg");
+                JSONObject userdata = msg.getJSONObject(0);
 
 
                 images_list.clear();
@@ -486,15 +473,14 @@ public class EditProfile_F extends Fragment {
                 school_edit.setText(userdata.optString("school"));
                 dateofbrith_edit.setText(userdata.optString("birthday"));
 
-                if(userdata.optString("gender").toLowerCase().equals("male")){
+                if (userdata.optString("gender").toLowerCase().equals("male")) {
                     male_btn.setChecked(true);
-                }else if(userdata.optString("gender").toLowerCase().equals("female")){
+                } else if (userdata.optString("gender").toLowerCase().equals("female")) {
                     female_btn.setChecked(true);
                 }
 
 
                 profile_photos_adapter.notifyDataSetChanged();
-
 
 
             }
@@ -506,7 +492,6 @@ public class EditProfile_F extends Fragment {
     }
 
 
-
     // on done btn press this method will call
     // below two mehtod is user for save the change in our profile which we have done
     private void Call_Api_For_edit() {
@@ -516,34 +501,34 @@ public class EditProfile_F extends Fragment {
         try {
             parameters.put("fb_id", MainMenuActivity.user_id);
 
-            List<String> images=new ArrayList<>();
+            List<String> images = new ArrayList<>();
 
-            List<String> adapter_images=profile_photos_adapter.getData();
-            for (int i=0;i<adapter_images.size();i++){
-                if(!adapter_images.get(i).equals(MainMenuActivity.user_pic)){
+            List<String> adapter_images = profile_photos_adapter.getData();
+            for (int i = 0; i < adapter_images.size(); i++) {
+                if (!adapter_images.get(i).equals(MainMenuActivity.user_pic)) {
                     images.add(adapter_images.get(i));
                 }
             }
 
-            parameters.put("image1",adapter_images.get(0));
-            parameters.put("image2",adapter_images.get(1));
-            parameters.put("image3",adapter_images.get(2));
-            parameters.put("image4",adapter_images.get(3));
-            parameters.put("image5",adapter_images.get(4));
-            parameters.put("image6",adapter_images.get(5));
+            parameters.put("image1", adapter_images.get(0));
+            parameters.put("image2", adapter_images.get(1));
+            parameters.put("image3", adapter_images.get(2));
+            parameters.put("image4", adapter_images.get(3));
+            parameters.put("image5", adapter_images.get(4));
+            parameters.put("image6", adapter_images.get(5));
 
-            parameters.put("about_me",about_edit.getText().toString());
-            parameters.put("job_title",job_title_edit.getText().toString());
-            parameters.put("company",company_edit.getText().toString());
-            parameters.put("school",school_edit.getText().toString());
-            parameters.put("birthday",dateofbrith_edit.getText().toString());
+            parameters.put("about_me", about_edit.getText().toString());
+            parameters.put("job_title", job_title_edit.getText().toString());
+            parameters.put("company", company_edit.getText().toString());
+            parameters.put("school", school_edit.getText().toString());
+            parameters.put("birthday", dateofbrith_edit.getText().toString());
 
 
-            if(male_btn.isChecked()){
-                parameters.put("gender","Male");
+            if (male_btn.isChecked()) {
+                parameters.put("gender", "Male");
 
-            }else if(female_btn.isChecked()){
-                parameters.put("gender","Female");
+            } else if (female_btn.isChecked()) {
+                parameters.put("gender", "Female");
             }
 
 
@@ -551,7 +536,7 @@ public class EditProfile_F extends Fragment {
             e.printStackTrace();
         }
 
-        Log.d("resp",parameters.toString());
+        Log.d("resp", parameters.toString());
 
         RequestQueue rq = Volley.newRequestQueue(context);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
@@ -559,8 +544,8 @@ public class EditProfile_F extends Fragment {
 
                     @Override
                     public void onResponse(JSONObject response) {
-                        String respo=response.toString();
-                        Log.d("responce",respo);
+                        String respo = response.toString();
+                        Log.d("responce", respo);
                         Parse_edit_data(respo);
                     }
 
@@ -570,7 +555,7 @@ public class EditProfile_F extends Fragment {
                     public void onErrorResponse(VolleyError error) {
                         // TODO: Handle error
                         iosDialog.cancel();
-                        Log.d("respo",error.toString());
+                        Log.d("respo", error.toString());
                     }
                 });
 
@@ -583,31 +568,31 @@ public class EditProfile_F extends Fragment {
 
     }
 
-    public void Parse_edit_data(String loginData){
+    public void Parse_edit_data(String loginData) {
         iosDialog.cancel();
         try {
-            JSONObject jsonObject=new JSONObject(loginData);
-            String code=jsonObject.optString("code");
-            if(code.equals("200")){
+            JSONObject jsonObject = new JSONObject(loginData);
+            String code = jsonObject.optString("code");
+            if (code.equals("200")) {
 
-                        JSONArray msg=jsonObject.getJSONArray("msg");
-                        JSONObject userdata=msg.getJSONObject(0);
+                JSONArray msg = jsonObject.getJSONArray("msg");
+                JSONObject userdata = msg.getJSONObject(0);
 
-                        MainMenuActivity.sharedPreferences.edit().putString(Variables.birth_day,userdata.optString("age")).commit();
-                        MainMenuActivity.birthday=userdata.optString("age");
+                MainMenuActivity.sharedPreferences.edit().putString(Variables.birth_day, userdata.optString("age")).commit();
+                MainMenuActivity.birthday = userdata.optString("age");
 
 
-                       Profile_F.age.setText(MainMenuActivity.birthday);
+                Profile_F.age.setText(MainMenuActivity.birthday);
 
-                       if(!MainMenuActivity.user_pic.equals(userdata.optString("image1"))) {
-                           MainMenuActivity.sharedPreferences.edit().putString(Variables.u_pic, userdata.optString("image1")).commit();
-                           MainMenuActivity.user_pic = userdata.optString("image1");
-                           Picasso.with(context).load(MainMenuActivity.user_pic)
-                                   .resize(200, 200)
-                                   .placeholder(R.drawable.profile_image_placeholder)
-                                   .centerCrop()
-                                   .into(Profile_F.profile_image);
-                       }
+                if (!MainMenuActivity.user_pic.equals(userdata.optString("image1"))) {
+                    MainMenuActivity.sharedPreferences.edit().putString(Variables.u_pic, userdata.optString("image1")).commit();
+                    MainMenuActivity.user_pic = userdata.optString("image1");
+                    Picasso.with(context).load(MainMenuActivity.user_pic)
+                            .resize(200, 200)
+                            .placeholder(R.drawable.profile_image_placeholder)
+                            .centerCrop()
+                            .into(Profile_F.profile_image);
+                }
 
                 // if data is save then we will go back
                 getActivity().onBackPressed();
@@ -619,7 +604,6 @@ public class EditProfile_F extends Fragment {
         }
 
     }
-
 
 
 }

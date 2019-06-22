@@ -24,8 +24,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+
 import net.fabapps.binder.CodeClasses.Variables;
 import net.fabapps.binder.R;
+
 import com.gmail.samehadar.iosdialog.IOSDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -52,8 +54,8 @@ public class Login_Phone_A extends AppCompatActivity {
             verificationCallbacks;
     private PhoneAuthProvider.ForceResendingToken resendToken;
     private FirebaseAuth fbAuth;
-    EditText phoneText,digit1,digit2,digit3,digit4,digit5,digit6;
-    TextView countrytxt,countrycodetxt,sendtotxt;
+    EditText phoneText, digit1, digit2, digit3, digit4, digit5, digit6;
+    TextView countrytxt, countrycodetxt, sendtotxt;
     RelativeLayout select_country;
     ViewFlipper viewFlipper;
     String phoneNumber;
@@ -69,11 +71,11 @@ public class Login_Phone_A extends AppCompatActivity {
         fbAuth = FirebaseAuth.getInstance();
 
 
-        sharedPreferences=getSharedPreferences(Variables.pref_name,MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences(Variables.pref_name, MODE_PRIVATE);
 
-        phoneText=findViewById(R.id.phonetxt);
+        phoneText = findViewById(R.id.phonetxt);
 
-        select_country=findViewById(R.id.select_country);
+        select_country = findViewById(R.id.select_country);
         select_country.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -81,12 +83,12 @@ public class Login_Phone_A extends AppCompatActivity {
             }
         });
 
-        countrytxt    =findViewById(R.id.countrytxt);
-        countrycodetxt=findViewById(R.id.countrycodetxt);
+        countrytxt = findViewById(R.id.countrytxt);
+        countrycodetxt = findViewById(R.id.countrycodetxt);
 
-        sendtotxt=findViewById(R.id.sendtotxt);
+        sendtotxt = findViewById(R.id.sendtotxt);
 
-        viewFlipper=findViewById(R.id.viewfillper);
+        viewFlipper = findViewById(R.id.viewfillper);
 
         codefill();
 
@@ -99,18 +101,18 @@ public class Login_Phone_A extends AppCompatActivity {
     }
 
     //message code fill in edittext and change focus in android
-    public void codefill(){
-        digit1=findViewById(R.id.digitone);
-        digit2=findViewById(R.id.digittwo);
-        digit3=findViewById(R.id.digitthree);
-        digit4=findViewById(R.id.digitfour);
-        digit5=findViewById(R.id.digitfive);
-        digit6=findViewById(R.id.digitsix);
+    public void codefill() {
+        digit1 = findViewById(R.id.digitone);
+        digit2 = findViewById(R.id.digittwo);
+        digit3 = findViewById(R.id.digitthree);
+        digit4 = findViewById(R.id.digitfour);
+        digit5 = findViewById(R.id.digitfive);
+        digit6 = findViewById(R.id.digitsix);
 
         digit1.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                if(digit1.getText().toString().length()==0){
+                if (digit1.getText().toString().length() == 0) {
                     digit2.requestFocus();
                 }
             }
@@ -129,7 +131,7 @@ public class Login_Phone_A extends AppCompatActivity {
         digit2.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                if(digit2.getText().toString().length()==0){
+                if (digit2.getText().toString().length() == 0) {
                     digit3.requestFocus();
                 }
             }
@@ -148,7 +150,7 @@ public class Login_Phone_A extends AppCompatActivity {
         digit3.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                if(digit3.getText().toString().length()==0){
+                if (digit3.getText().toString().length() == 0) {
                     digit4.requestFocus();
                 }
             }
@@ -167,7 +169,7 @@ public class Login_Phone_A extends AppCompatActivity {
         digit4.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                if(digit4.getText().toString().length()==0){
+                if (digit4.getText().toString().length() == 0) {
                     digit5.requestFocus();
                 }
 
@@ -187,7 +189,7 @@ public class Login_Phone_A extends AppCompatActivity {
         digit5.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                if(digit5.getText().toString().length()==0){
+                if (digit5.getText().toString().length() == 0) {
                     digit6.requestFocus();
                 }
 
@@ -206,8 +208,9 @@ public class Login_Phone_A extends AppCompatActivity {
 
     }
 
-    String country_iso_code="US";
-    public void Opencountry(){
+    String country_iso_code = "US";
+
+    public void Opencountry() {
         final CountryPicker picker = CountryPicker.newInstance("Select Country");
         picker.setListener(new CountryPickerListener() {
             @Override
@@ -216,20 +219,20 @@ public class Login_Phone_A extends AppCompatActivity {
                 countrytxt.setText(name);
                 countrycodetxt.setText(dialCode);
                 picker.dismiss();
-                country_iso_code=code;
+                country_iso_code = code;
             }
         });
-        picker.setStyle(R.style.countrypicker_style,R.style.countrypicker_style);
+        picker.setStyle(R.style.countrypicker_style, R.style.countrypicker_style);
         picker.show(getSupportFragmentManager(), "Select Country");
     }
 
     public void Nextbtn(View view) {
-        phoneNumber=countrycodetxt.getText().toString()+phoneText.getText().toString();
+        phoneNumber = countrycodetxt.getText().toString() + phoneText.getText().toString();
         Send_Number_tofirebase(phoneNumber);
     }
 
 
-    public void Send_Number_tofirebase(String phoneNumber){
+    public void Send_Number_tofirebase(String phoneNumber) {
         setUpVerificatonCallbacks();
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
                 phoneNumber,        // Phone number to verify
@@ -246,16 +249,15 @@ public class Login_Phone_A extends AppCompatActivity {
 
                     @Override
                     public void onVerificationCompleted(PhoneAuthCredential credential) {
-
-                           iosDialog.cancel();
-                            signInWithPhoneAuthCredential(credential);
-
+                        iosDialog.cancel();
+                        signInWithPhoneAuthCredential(credential);
                     }
 
                     @Override
                     public void onVerificationFailed(FirebaseException e) {
                         iosDialog.cancel();
-                        Log.d("responce",e.toString());
+                        e.printStackTrace();
+                        Log.d("responce", e.toString());
                         Toast.makeText(Login_Phone_A.this, "Enter Correct Number.", Toast.LENGTH_SHORT).show();
                         if (e instanceof FirebaseAuthInvalidCredentialsException) {
                             // Invalid request
@@ -266,32 +268,31 @@ public class Login_Phone_A extends AppCompatActivity {
 
                     @Override
                     public void onCodeSent(String verificationId, PhoneAuthProvider.ForceResendingToken token) {
-
+                        Log.i("mytag", "code sent");
                         iosDialog.cancel();
 
                         phoneVerificationId = verificationId;
                         resendToken = token;
-                        sendtotxt.setText("Send to ( "+phoneNumber+" )");
+                        sendtotxt.setText("Send to ( " + phoneNumber + " )");
                         iosDialog.cancel();
                         viewFlipper.setInAnimation(Login_Phone_A.this, R.anim.in_from_right);
                         viewFlipper.setOutAnimation(Login_Phone_A.this, R.anim.out_to_left);
                         viewFlipper.setDisplayedChild(1);
-
                     }
                 };
     }
 
 
     public void verifyCode(View view) {
-    String code=""+digit1.getText().toString()+digit2.getText().toString()+digit3.getText().toString()+digit4.getText().toString()+digit5.getText().toString()+digit6.getText().toString();
-    if(!code.equals("")){
-        iosDialog.show();
-    PhoneAuthCredential credential =
-                PhoneAuthProvider.getCredential(phoneVerificationId, code);
-        signInWithPhoneAuthCredential(credential);
-    }else {
-        Toast.makeText(this, "Enter the Correct varification Code", Toast.LENGTH_SHORT).show();
-    }
+        String code = "" + digit1.getText().toString() + digit2.getText().toString() + digit3.getText().toString() + digit4.getText().toString() + digit5.getText().toString() + digit6.getText().toString();
+        if (!code.equals("")) {
+            iosDialog.show();
+            PhoneAuthCredential credential =
+                    PhoneAuthProvider.getCredential(phoneVerificationId, code);
+            signInWithPhoneAuthCredential(credential);
+        } else {
+            Toast.makeText(this, "Enter the Correct varification Code", Toast.LENGTH_SHORT).show();
+        }
 
     }
 
@@ -346,71 +347,67 @@ public class Login_Phone_A extends AppCompatActivity {
 
     private void Get_User_info() {
         iosDialog.show();
-        final String phone_no=phoneNumber.replace("+","");
+        final String phone_no = phoneNumber.replace("+", "");
         JSONObject parameters = new JSONObject();
         try {
             parameters.put("fb_id", phone_no);
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
         RequestQueue rq = Volley.newRequestQueue(this);
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.POST, Variables.getUserInfo, parameters, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        String respo=response.toString();
-                        Log.d("responce",respo);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, Variables.getUserInfo, parameters, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                String respo = response.toString();
+                //Log.d("responce", respo);
 
-                        iosDialog.cancel();
-                        try {
-                            JSONObject jsonObject=new JSONObject(respo);
-                            String code=jsonObject.optString("code");
-                            if(code.equals("200")){
+                iosDialog.cancel();
+                try {
+                    JSONObject jsonObject = new JSONObject(respo);
+                    String code = jsonObject.optString("code");
+                    if (code.equals("200")) {
 
-                                // if user is already logedin then we will save the user data and go to the enable location screen
-                                JSONArray msg=jsonObject.getJSONArray("msg");
-                                JSONObject userdata=msg.getJSONObject(0);
+                        // if user is already logedin then we will save the user data and go to the enable location screen
+                        JSONArray msg = jsonObject.getJSONArray("msg");
+                        JSONObject userdata = msg.getJSONObject(0);
 
-                                SharedPreferences.Editor editor=sharedPreferences.edit();
-                                editor.putString(Variables.uid,phone_no);
-                                editor.putString(Variables.f_name,userdata.optString("first_name"));
-                                editor.putString(Variables.l_name,userdata.optString("last_name"));
-                                editor.putString(Variables.birth_day,userdata.optString("age"));
-                                editor.putString(Variables.gender,userdata.optString("gender"));
-                                editor.putString(Variables.u_pic,userdata.optString("image1"));
-                                editor.putBoolean(Variables.islogin,true);
-                                editor.commit();
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString(Variables.uid, phone_no);
+                        editor.putString(Variables.f_name, userdata.optString("first_name"));
+                        editor.putString(Variables.l_name, userdata.optString("last_name"));
+                        editor.putString(Variables.birth_day, userdata.optString("age"));
+                        editor.putString(Variables.gender, userdata.optString("gender"));
+                        editor.putString(Variables.u_pic, userdata.optString("image1"));
+                        editor.putBoolean(Variables.islogin, true);
+                        editor.apply();
 
-                                // after all things done we will move the user to enable location screen
-                                enable_location();
-
-
-                            }else {
-                                // if user is first time login then we will get the usser picture and name
-                                Intent intent=new Intent(Login_Phone_A.this, Get_User_Info_A.class);
-                                intent.putExtra("id",phone_no);
-                                startActivity(intent);
-                                overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);
-                                finish();
-
-                            }
-
-                        }catch (JSONException e) {
-
-                            e.printStackTrace();
-                        }
-
+                        // after all things done we will move the user to enable location screen
+                        enable_location();
+                    } else {
+                        // if user is first time login then we will get the usser picture and name
+                        Intent intent = new Intent(Login_Phone_A.this, Get_User_Info_A.class);
+                        intent.putExtra("id", phone_no);
+                        startActivity(intent);
+                        overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);
+                        finish();
 
                     }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // TODO: Handle error
-                        Log.d("respo",error.toString());
-                        iosDialog.cancel();
-                    }
-                });
+
+                } catch (JSONException e) {
+
+                    e.printStackTrace();
+                }
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // TODO: Handle error
+                Log.d("respo", error.toString());
+                iosDialog.cancel();
+            }
+        });
         jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(30000,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
@@ -425,11 +422,10 @@ public class Login_Phone_A extends AppCompatActivity {
         // will move the user for enable location screen
         Enable_location_F enable_location_f = new Enable_location_F();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.setCustomAnimations(R.anim.in_from_right, R.anim.out_to_left,R.anim.in_from_left,R.anim.out_to_right);
+        transaction.setCustomAnimations(R.anim.in_from_right, R.anim.out_to_left, R.anim.in_from_left, R.anim.out_to_right);
         getSupportFragmentManager().popBackStackImmediate();
         transaction.replace(R.id.Login_Phone_A, enable_location_f).addToBackStack(null).commit();
     }
-
 
 
 }

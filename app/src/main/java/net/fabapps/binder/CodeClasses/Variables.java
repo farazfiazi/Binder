@@ -3,10 +3,6 @@ package net.fabapps.binder.CodeClasses;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-/**
- * Created by AQEEL on 10/23/2018.
- */
-
 public class Variables {
 
     public static String pref_name="pref_name";
@@ -27,7 +23,6 @@ public class Variables {
 
     public static String selected_location_string ="selected_location_string";
 
-
     public static String device_token="device_token";
     public static String ispuduct_puchase="ispuduct_puchase";
 
@@ -39,19 +34,13 @@ public class Variables {
     public static String max_age="max_age";
     public static String show_me_on_binder="show_me_on_tinder";
 
-
     public static int default_distance=800;
     public static int default_age=60;
-
-
 
     public static int permission_camera_code=786;
     public static int permission_write_data=788;
     public static int permission_Read_data=789;
     public static int permission_Recording_audio=790;
-
-
-
 
     public static String Pic_firstpart="https://graph.facebook.com/";
     public static String Pic_secondpart="/picture?width=500&width=500";
@@ -64,10 +53,6 @@ public class Variables {
 
     public static String gif_firstpart_chat="https://media.giphy.com/media/";
     public static String gif_secondpart_chat="/200w.gif";
-
-
-
-
    
     public static String gif_api_key1="gif api key which you will get from Giphy developer site";
 
@@ -87,11 +72,9 @@ public class Variables {
             new SimpleDateFormat("dd-MM-yyyy HH:mmZZ", Locale.ENGLISH);
 
 
-
-
     public static int Select_image_from_gallry_code=3;
 
-    public static String domain="Domain link of all api in the bottom of file";
+    public static String domain="https://muslimatch.online/API/index.php?p=";
 
 
     public static String SignUp=domain+"signup";
@@ -118,9 +101,5 @@ public class Variables {
 
     public static String update_purchase_Status=domain+"update_purchase_Status";
 
-
     public static String deleteAccount=domain+"deleteAccount";
-
-
-
 }

@@ -31,7 +31,7 @@ import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
 import net.fabapps.binder.CodeClasses.Variables;
 import net.fabapps.binder.Main_Menu.MainMenuActivity;
 import net.fabapps.binder.Profile.EditProfile.EditProfile_F;
-import com.dinosoftlabs.binder.R;
+import net.fabapps.binder.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;

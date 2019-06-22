@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "647199164215",
+    "firebase_url": "https://blinder-bd4e1.firebaseio.com",
+    "project_id": "blinder-bd4e1",
+    "storage_bucket": "blinder-bd4e1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:647199164215:android:a83467702eb76aca",
+        "android_client_info": {
+          "package_name": "net.fabapps.binder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "647199164215-28c0816gq9pk7qfo01a7dt8n3g791vp3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvb0M4mZ4_rHEVVBnX56sS9h6AN8XG9CQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "647199164215-28c0816gq9pk7qfo01a7dt8n3g791vp3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
