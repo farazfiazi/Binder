@@ -54,14 +54,14 @@ public class Variables {
     public static String gif_firstpart_chat="https://media.giphy.com/media/";
     public static String gif_secondpart_chat="/200w.gif";
    
-    public static String gif_api_key1="gif api key which you will get from Giphy developer site";
+    public static String gif_api_key1="GIjbMwjlfGcmNEgB0eqphgRgwNCYN8gh";
 
     // Bottom two variable Related with in App Subscription
     //First step get licencekey
     public static String licencekey="Licence key which you will get from playstore";
 
     //create the Product id or in app subcription id
-    public static String product_ID="product subscrition id which you will make from playstore";
+    public static String product_ID="7c0a35c8-07d8-42b9-b805-218aa9bf6f89";
 
 
 

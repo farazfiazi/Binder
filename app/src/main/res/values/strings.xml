@@ -1,5 +1,5 @@
 ﻿<resources>
-    <string name="app_name">Binder</string>
+    <string name="app_name">Two Souls Muslim Match</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -9,7 +9,7 @@
     <string name="fb_login_protocol_scheme">fb459431864790490</string>
 
 
-    <string name="my_Interstitial_Add">ca-app-pub-3940256099942544/1033173712</string>
+    <string name="my_Interstitial_Add">ca-app-pub-6012388026242298/3871520261</string>
 
     <string name="subscription_txt">By tapping “Continue”, your payment will be charged to your Google Play
         account, and your subscription will automatically renew for the same
@@ -17,7 +17,7 @@
         Google Play store at least 24 hours prior to the end of the current period.
         By tapping “Continue”, you agree to our Privacy Policy and Terms.</string>
 
-    <string name="giphy_api">place your Giphy api key</string>
+    <string name="giphy_api">GIjbMwjlfGcmNEgB0eqphgRgwNCYN8gh</string>
 
 
     <!--if you install the app form android studio-->

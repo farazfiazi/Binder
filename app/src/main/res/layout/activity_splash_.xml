@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.dinosoftlabs.binder.net.dinosoftlabs.binder.Splash_A">
+    tools:context="net.fabapps.binder.Splash_A">
 
     <ImageView
         android:layout_width="match_parent"

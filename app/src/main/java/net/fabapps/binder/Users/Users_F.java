@@ -438,7 +438,7 @@ public class Users_F extends RootFragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
-        MobileAds.initialize(context, "ca-app-pub-3940256099942544~3347511713");
+        MobileAds.initialize(context, "ca-app-pub-6012388026242298~8193908658");
 
         //code for intertial add
         mInterstitialAd = new InterstitialAd(context);
